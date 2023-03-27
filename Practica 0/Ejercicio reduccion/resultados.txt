@@ -1,0 +1,248 @@
+Vuelta 1
+1000
+Tiempo del Kernel-1 -> 15.425 microsegundos.
+Tiempo del Kernel-2 -> 17.742 microsegundos.
+2000
+Tiempo del Kernel-1 -> 19.938 microsegundos.
+Tiempo del Kernel-2 -> 28.963 microsegundos.
+5000
+Tiempo del Kernel-1 -> 15.092 microsegundos.
+Tiempo del Kernel-2 -> 18.231 microsegundos.
+10000
+Tiempo del Kernel-1 -> 17.497 microsegundos.
+Tiempo del Kernel-2 -> 17.777 microsegundos.
+20000
+Tiempo del Kernel-1 -> 16.83 microsegundos.
+Tiempo del Kernel-2 -> 17.986 microsegundos.
+50000
+Tiempo del Kernel-1 -> 20.864 microsegundos.
+Tiempo del Kernel-2 -> 22.747 microsegundos.
+100000
+Tiempo del Kernel-1 -> 34.776 microsegundos.
+Tiempo del Kernel-2 -> 39.357 microsegundos.
+200000
+Tiempo del Kernel-1 -> 123.105 microsegundos.
+Tiempo del Kernel-2 -> 39.578 microsegundos.
+500000
+Tiempo del Kernel-1 -> 77.811 microsegundos.
+Tiempo del Kernel-2 -> 66.821 microsegundos.
+1000000
+Tiempo del Kernel-1 -> 136.917 microsegundos.
+Tiempo del Kernel-2 -> 117.557 microsegundos.
+Vuelta 2
+1000
+Tiempo del Kernel-1 -> 15.775 microsegundos.
+Tiempo del Kernel-2 -> 17.3 microsegundos.
+2000
+Tiempo del Kernel-1 -> 15.634 microsegundos.
+Tiempo del Kernel-2 -> 17.359 microsegundos.
+5000
+Tiempo del Kernel-1 -> 15.214 microsegundos.
+Tiempo del Kernel-2 -> 18.027 microsegundos.
+10000
+Tiempo del Kernel-1 -> 17.315 microsegundos.
+Tiempo del Kernel-2 -> 17.614 microsegundos.
+20000
+Tiempo del Kernel-1 -> 16.823 microsegundos.
+Tiempo del Kernel-2 -> 18.139 microsegundos.
+50000
+Tiempo del Kernel-1 -> 21.446 microsegundos.
+Tiempo del Kernel-2 -> 31.494 microsegundos.
+100000
+Tiempo del Kernel-1 -> 35.611 microsegundos.
+Tiempo del Kernel-2 -> 40.078 microsegundos.
+200000
+Tiempo del Kernel-1 -> 131.69 microsegundos.
+Tiempo del Kernel-2 -> 40.409 microsegundos.
+500000
+Tiempo del Kernel-1 -> 95.245 microsegundos.
+Tiempo del Kernel-2 -> 79.657 microsegundos.
+1000000
+Tiempo del Kernel-1 -> 136.196 microsegundos.
+Tiempo del Kernel-2 -> 117.952 microsegundos.
+Vuelta 3
+1000
+Tiempo del Kernel-1 -> 15.507 microsegundos.
+Tiempo del Kernel-2 -> 17.345 microsegundos.
+2000
+Tiempo del Kernel-1 -> 15.76 microsegundos.
+Tiempo del Kernel-2 -> 17.384 microsegundos.
+5000
+Tiempo del Kernel-1 -> 13.81 microsegundos.
+Tiempo del Kernel-2 -> 16.67 microsegundos.
+10000
+Tiempo del Kernel-1 -> 16.931 microsegundos.
+Tiempo del Kernel-2 -> 17.552 microsegundos.
+20000
+Tiempo del Kernel-1 -> 16.884 microsegundos.
+Tiempo del Kernel-2 -> 18.211 microsegundos.
+50000
+Tiempo del Kernel-1 -> 29.311 microsegundos.
+Tiempo del Kernel-2 -> 33.87 microsegundos.
+100000
+Tiempo del Kernel-1 -> 41.247 microsegundos.
+Tiempo del Kernel-2 -> 29.534 microsegundos.
+200000
+Tiempo del Kernel-1 -> 77.825 microsegundos.
+Tiempo del Kernel-2 -> 53.255 microsegundos.
+500000
+Tiempo del Kernel-1 -> 77.551 microsegundos.
+Tiempo del Kernel-2 -> 67.711 microsegundos.
+1000000
+Tiempo del Kernel-1 -> 161.429 microsegundos.
+Tiempo del Kernel-2 -> 131.035 microsegundos.
+vuelta 1
+1000
+Tiempo del Kernel-1 -> 16.366 microsegundos.
+Tiempo del Kernel-2 -> 17.845 microsegundos.
+2000
+Tiempo del Kernel-1 -> 15.586 microsegundos.
+Tiempo del Kernel-2 -> 17.266 microsegundos.
+5000
+Tiempo del Kernel-1 -> 16.18 microsegundos.
+Tiempo del Kernel-2 -> 19.144 microsegundos.
+10000
+Tiempo del Kernel-1 -> 26.361 microsegundos.
+Tiempo del Kernel-2 -> 28.391 microsegundos.
+20000
+Tiempo del Kernel-1 -> 17.657 microsegundos.
+Tiempo del Kernel-2 -> 17.545 microsegundos.
+50000
+Tiempo del Kernel-1 -> 21.349 microsegundos.
+Tiempo del Kernel-2 -> 21.579 microsegundos.
+100000
+Tiempo del Kernel-1 -> 49.368 microsegundos.
+Tiempo del Kernel-2 -> 27.597 microsegundos.
+200000
+Tiempo del Kernel-1 -> 123.154 microsegundos.
+Tiempo del Kernel-2 -> 36.305 microsegundos.
+500000
+Tiempo del Kernel-1 -> 93.548 microsegundos.
+Tiempo del Kernel-2 -> 81.571 microsegundos.
+1000000
+Tiempo del Kernel-1 -> 133.057 microsegundos.
+Tiempo del Kernel-2 -> 115.698 microsegundos.
+vuelta 2
+1000
+Tiempo del Kernel-1 -> 15.955 microsegundos.
+Tiempo del Kernel-2 -> 18.315 microsegundos.
+2000
+Tiempo del Kernel-1 -> 15.858 microsegundos.
+Tiempo del Kernel-2 -> 17.717 microsegundos.
+5000
+Tiempo del Kernel-1 -> 21.263 microsegundos.
+Tiempo del Kernel-2 -> 29.258 microsegundos.
+10000
+Tiempo del Kernel-1 -> 17.647 microsegundos.
+Tiempo del Kernel-2 -> 18.333 microsegundos.
+20000
+Tiempo del Kernel-1 -> 16.795 microsegundos.
+Tiempo del Kernel-2 -> 18.64 microsegundos.
+50000
+Tiempo del Kernel-1 -> 19.59 microsegundos.
+Tiempo del Kernel-2 -> 22.121 microsegundos.
+100000
+Tiempo del Kernel-1 -> 55.898 microsegundos.
+Tiempo del Kernel-2 -> 26.898 microsegundos.
+200000
+Tiempo del Kernel-1 -> 131.159 microsegundos.
+Tiempo del Kernel-2 -> 36.312 microsegundos.
+500000
+Tiempo del Kernel-1 -> 76.373 microsegundos.
+Tiempo del Kernel-2 -> 67.504 microsegundos.
+1000000
+Tiempo del Kernel-1 -> 149.45 microsegundos.
+Tiempo del Kernel-2 -> 128.893 microsegundos.
+vuelta 3
+1000
+Tiempo del Kernel-1 -> 15.133 microsegundos.
+Tiempo del Kernel-2 -> 17.853 microsegundos.
+2000
+Tiempo del Kernel-1 -> 15.898 microsegundos.
+Tiempo del Kernel-2 -> 17.481 microsegundos.
+5000
+Tiempo del Kernel-1 -> 15.602 microsegundos.
+Tiempo del Kernel-2 -> 18.616 microsegundos.
+10000
+Tiempo del Kernel-1 -> 27.861 microsegundos.
+Tiempo del Kernel-2 -> 29.708 microsegundos.
+20000
+Tiempo del Kernel-1 -> 17.398 microsegundos.
+Tiempo del Kernel-2 -> 18.927 microsegundos.
+50000
+Tiempo del Kernel-1 -> 29.964 microsegundos.
+Tiempo del Kernel-2 -> 32.924 microsegundos.
+100000
+Tiempo del Kernel-1 -> 54.654 microsegundos.
+Tiempo del Kernel-2 -> 27.065 microsegundos.
+200000
+Tiempo del Kernel-1 -> 89.982 microsegundos.
+Tiempo del Kernel-2 -> 48.201 microsegundos.
+500000
+Tiempo del Kernel-1 -> 77.322 microsegundos.
+Tiempo del Kernel-2 -> 67.8 microsegundos.
+1000000
+Tiempo del Kernel-1 -> 149.377 microsegundos.
+Tiempo del Kernel-2 -> 129.419 microsegundos.
+vuelta 4
+1000
+Tiempo del Kernel-1 -> 16.326 microsegundos.
+Tiempo del Kernel-2 -> 23.947 microsegundos.
+2000
+Tiempo del Kernel-1 -> 22.607 microsegundos.
+Tiempo del Kernel-2 -> 28.395 microsegundos.
+5000
+Tiempo del Kernel-1 -> 15.372 microsegundos.
+Tiempo del Kernel-2 -> 18.369 microsegundos.
+10000
+Tiempo del Kernel-1 -> 26.545 microsegundos.
+Tiempo del Kernel-2 -> 29.01 microsegundos.
+20000
+Tiempo del Kernel-1 -> 17.18 microsegundos.
+Tiempo del Kernel-2 -> 17.866 microsegundos.
+50000
+Tiempo del Kernel-1 -> 28.917 microsegundos.
+Tiempo del Kernel-2 -> 32.538 microsegundos.
+100000
+Tiempo del Kernel-1 -> 58.871 microsegundos.
+Tiempo del Kernel-2 -> 26.832 microsegundos.
+200000
+Tiempo del Kernel-1 -> 120.567 microsegundos.
+Tiempo del Kernel-2 -> 36.606 microsegundos.
+500000
+Tiempo del Kernel-1 -> 76.428 microsegundos.
+Tiempo del Kernel-2 -> 66.38 microsegundos.
+1000000
+Tiempo del Kernel-1 -> 132.806 microsegundos.
+Tiempo del Kernel-2 -> 117.736 microsegundos.
+vuelta 5
+1000
+Tiempo del Kernel-1 -> 16.301 microsegundos.
+Tiempo del Kernel-2 -> 17.707 microsegundos.
+2000
+Tiempo del Kernel-1 -> 16.589 microsegundos.
+Tiempo del Kernel-2 -> 27.838 microsegundos.
+5000
+Tiempo del Kernel-1 -> 23.488 microsegundos.
+Tiempo del Kernel-2 -> 30.517 microsegundos.
+10000
+Tiempo del Kernel-1 -> 17.823 microsegundos.
+Tiempo del Kernel-2 -> 18.311 microsegundos.
+20000
+Tiempo del Kernel-1 -> 24.811 microsegundos.
+Tiempo del Kernel-2 -> 29.807 microsegundos.
+50000
+Tiempo del Kernel-1 -> 21.38 microsegundos.
+Tiempo del Kernel-2 -> 21.348 microsegundos.
+100000
+Tiempo del Kernel-1 -> 35.161 microsegundos.
+Tiempo del Kernel-2 -> 37.283 microsegundos.
+200000
+Tiempo del Kernel-1 -> 128.456 microsegundos.
+Tiempo del Kernel-2 -> 35.302 microsegundos.
+500000
+Tiempo del Kernel-1 -> 77.955 microsegundos.
+Tiempo del Kernel-2 -> 66.095 microsegundos.
+1000000
+Tiempo del Kernel-1 -> 132.958 microsegundos.
+Tiempo del Kernel-2 -> 117.996 microsegundos.

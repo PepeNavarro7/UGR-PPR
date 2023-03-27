@@ -1,0 +1,65 @@
+vuelta 1
+1000000
+Tiempo del Kernel-1 -> 132.901 microsegundos.
+Tiempo del Kernel-2 -> 116.652 microsegundos.
+2000000
+Tiempo del Kernel-1 -> 258.985 microsegundos.
+Tiempo del Kernel-2 -> 226.881 microsegundos.
+5000000
+Tiempo del Kernel-1 -> 599.677 microsegundos.
+Tiempo del Kernel-2 -> 523.092 microsegundos.
+10000000
+Tiempo del Kernel-1 -> 1443.36 microsegundos.
+Tiempo del Kernel-2 -> 1000.96 microsegundos.
+vuelta 2
+1000000
+Tiempo del Kernel-1 -> 133.918 microsegundos.
+Tiempo del Kernel-2 -> 116.059 microsegundos.
+2000000
+Tiempo del Kernel-1 -> 244.528 microsegundos.
+Tiempo del Kernel-2 -> 215.708 microsegundos.
+5000000
+Tiempo del Kernel-1 -> 596.088 microsegundos.
+Tiempo del Kernel-2 -> 513.414 microsegundos.
+10000000
+Tiempo del Kernel-1 -> 1417.08 microsegundos.
+Tiempo del Kernel-2 -> 1002.07 microsegundos.
+vuelta 3
+1000000
+Tiempo del Kernel-1 -> 135.51 microsegundos.
+Tiempo del Kernel-2 -> 119.102 microsegundos.
+2000000
+Tiempo del Kernel-1 -> 245.146 microsegundos.
+Tiempo del Kernel-2 -> 215.106 microsegundos.
+5000000
+Tiempo del Kernel-1 -> 625.8 microsegundos.
+Tiempo del Kernel-2 -> 510.549 microsegundos.
+10000000
+Tiempo del Kernel-1 -> 1445.92 microsegundos.
+Tiempo del Kernel-2 -> 999.934 microsegundos.
+vuelta 4
+1000000
+Tiempo del Kernel-1 -> 132.617 microsegundos.
+Tiempo del Kernel-2 -> 115.961 microsegundos.
+2000000
+Tiempo del Kernel-1 -> 246.375 microsegundos.
+Tiempo del Kernel-2 -> 215.409 microsegundos.
+5000000
+Tiempo del Kernel-1 -> 662.543 microsegundos.
+Tiempo del Kernel-2 -> 510.38 microsegundos.
+10000000
+Tiempo del Kernel-1 -> 1434.22 microsegundos.
+Tiempo del Kernel-2 -> 1000.51 microsegundos.
+vuelta 5
+1000000
+Tiempo del Kernel-1 -> 132.91 microsegundos.
+Tiempo del Kernel-2 -> 117.952 microsegundos.
+2000000
+Tiempo del Kernel-1 -> 246.531 microsegundos.
+Tiempo del Kernel-2 -> 215.417 microsegundos.
+5000000
+Tiempo del Kernel-1 -> 597.976 microsegundos.
+Tiempo del Kernel-2 -> 522.968 microsegundos.
+10000000
+Tiempo del Kernel-1 -> 1411.68 microsegundos.
+Tiempo del Kernel-2 -> 1000.63 microsegundos.
