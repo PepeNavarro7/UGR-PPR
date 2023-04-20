@@ -1,0 +1,90 @@
+Tamanio de bloque ->  64
+./input/input400
+TCPU -> 0.396883
+TGPU1 -> 0.008384
+SGPU1 -> 47.3381
+TGPU2 -> 0.01151
+SGPU2 -> 34.4816
+Media -> 219
+./input/input1000
+TCPU -> 2.57318
+TGPU1 -> 0.089849
+SGPU1 -> 28.639
+TGPU2 -> 0.205505
+SGPU2 -> 12.5213
+Media -> 488
+./input/input1400
+TCPU -> 7.06995
+TGPU1 -> 0.208237
+SGPU1 -> 33.9515
+TGPU2 -> 0.391424
+SGPU2 -> 18.0621
+Media -> 666
+./input/input2000
+TCPU -> 21.3218
+TGPU1 -> 0.586367
+SGPU1 -> 36.3625
+TGPU2 -> 0.99256
+SGPU2 -> 21.4816
+Media -> 934
+ 
+Tamanio de bloque ->  256
+./input/input400
+TCPU -> 0.201549
+TGPU1 -> 0.00599
+SGPU1 -> 33.6476
+TGPU2 -> 0.018571
+SGPU2 -> 10.8529
+Media -> 220
+./input/input1000
+TCPU -> 2.62064
+TGPU1 -> 0.060352
+SGPU1 -> 43.4227
+TGPU2 -> 0.253136
+SGPU2 -> 10.3527
+Media -> 488
+./input/input1400
+TCPU -> 7.05886
+TGPU1 -> 0.150153
+SGPU1 -> 47.0111
+TGPU2 -> 0.600222
+SGPU2 -> 11.7604
+Media -> 666
+./input/input2000
+TCPU -> 21.3
+TGPU1 -> 0.397707
+SGPU1 -> 53.557
+TGPU2 -> 1.70412
+SGPU2 -> 12.4991
+Media -> 934
+ 
+Tamanio de bloque ->  1024
+./input/input400
+TCPU -> 0.169906
+TGPU1 -> 0.006215
+SGPU1 -> 27.3381
+TGPU2 -> 0.029102
+SGPU2 -> 5.83829
+Media -> 222
+./input/input1000
+TCPU -> 2.586
+TGPU1 -> 0.066483
+SGPU1 -> 38.8972
+TGPU2 -> 0.416831
+SGPU2 -> 6.20396
+Media -> 489
+./input/input1400
+TCPU -> 7.06238
+TGPU1 -> 0.161336
+SGPU1 -> 43.7744
+TGPU2 -> 1.11986
+SGPU2 -> 6.30651
+Media -> 666
+./input/input2000
+TCPU -> 21.3208
+TGPU1 -> 0.4876
+SGPU1 -> 43.726
+TGPU2 -> 3.24294
+SGPU2 -> 6.57452
+Media -> 934
+ 
