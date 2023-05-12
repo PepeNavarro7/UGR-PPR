@@ -20,7 +20,8 @@ int main(int argc, char * argv[]) {
         *reduccion_local; // reduccion por filas
 
     double tInicio, // Tiempo en el que comienza la ejecucion
-        Tpar; // Tiempo paralelo
+        Tpar, // Tiempo paralelo
+        Tseq; // Tiempo secuencial
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &numeroProcesadores);
@@ -41,9 +42,9 @@ int main(int argc, char * argv[]) {
     }
     const int RAIZ_P = (int)raiz,
         N = atoi(argv[1]); // Tamaño del lado de la matriz grande
-    if (N%RAIZ_P != 0){
+    if (N%numeroProcesadores != 0){
         if (id_Proceso==0)
-            cout << "N debe ser multiplo de raiz de p."<< endl;
+            cout << "N debe ser multiplo de np."<< endl;
         MPI_Finalize();
         return 0;
     } 
@@ -53,6 +54,7 @@ int main(int argc, char * argv[]) {
     multiplicacion_local = new float[TAM]; // reservamos para el trozo del vector multiplicacion
     resultado_local = new float[TAM];
     reduccion_local = new float[TAM];
+    
 
     // Proceso 0 genera matriz A y vector multiplicacion
     if (id_Proceso==0){
@@ -135,7 +137,7 @@ int main(int argc, char * argv[]) {
             resultado_local[i] += buf_recep[i*TAM+j] * multiplicacion_local[j];
         }
     }
-    
+
     // Ahora cada proceso tiene un vector de tamaño TAM con la suma, hay que hacer una reduccion
     // todos los procesos de una misma fila reducirán sus vectores a uno, que tendrá el proceso diagonal
     MPI_Reduce (resultado_local, reduccion_local, TAM, MPI_FLOAT, MPI_SUM, FILA_P, filas_com);
@@ -154,14 +156,39 @@ int main(int argc, char * argv[]) {
     // Terminamos la ejecucion de los procesos, despues de esto solo existira el proceso 0
     MPI_Finalize();
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // CÁLCULO SECUENCIAL
+    //////////////////////////////////////////////////////////////////////////////////
     if (id_Proceso == 0) {
+        float * comprueba = new float [N];
+
+        tInicio = MPI_Wtime();
+        for (int i = 0; i < N; i++) {
+	        comprueba[i] = 0.0;
+	        for (int j = 0; j < N; j++) {
+	            comprueba[i] += matriz_global[i*N+j] * vector_multiplicacion[j];
+	        }
+        }
+        Tseq = MPI_Wtime()-tInicio;
+
+        int errores = 0;
+        for (int i = 0; i < N; i++) {   
+            if (comprueba[i] != resultado[i])
+                errores++;
+        }
+
         // Liberamos memoria de proceso 0
         delete[] matriz_global;
         delete[] resultado;
         delete[] vector_multiplicacion;
         delete[] buf_envio;
-        
-        cout << "Tiempo paralelo -> " << Tpar*1000.0 << " milisegundos." << endl;
+        delete[] comprueba;
+         
+
+        //cout << "Se encontraron " << errores << " errores." << endl;
+        //cout << "(sin contar el scatter y el broadcast)" << endl;
+        cout << "Tiempo paralelo -----> " << Tpar*1000.0 << " milisegundos." << endl;
+        //cout << "Tiempo secuencial ---> " << Tseq*1000.0 << " milisegundos." << endl;
     }
 
     // Liberamos memorias locales

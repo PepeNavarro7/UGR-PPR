@@ -140,10 +140,10 @@ int main(int argc, char * argv[]) {
         delete [] resultado;
         delete [] comprueba;
 
-        cout << "Se encontraron " << errores << " errores." << endl;
-        cout << "(sin contar el scatter y el broadcast)" << endl;
-        cout << "Tiempo paralelo -----> " << Tpar*1000.0 << " milisegundos." << endl;
+        //cout << "Se encontraron " << errores << " errores." << endl;
+        //cout << "(sin contar el scatter y el broadcast)" << endl;
         cout << "Tiempo secuencial ---> " << Tseq*1000.0 << " milisegundos." << endl;
+        cout << "Tiempo paralelo -----> " << Tpar*1000.0 << " milisegundos." << endl;
     }
     
     delete [] vector_x;
