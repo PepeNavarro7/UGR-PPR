@@ -106,9 +106,8 @@ int main(int argc, char *argv[]){
 
     if(idProceso==0){
         string st = "";
-        for (int i=0; i<N; ++i){
+        for (int i=0; i<N; ++i)
             st+= to_string(vectorGlobal[i]) + "     ";
-        }
         cout << st << endl;
         delete[] vectorGlobal;
     }    

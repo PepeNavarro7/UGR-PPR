@@ -6,3 +6,6 @@ version1: version1.cpp
 do: version1
 	mpirun -np 4 version1 5 100
 	@echo ""
+
+clean:
+	rm version1
