@@ -90,10 +90,11 @@ int main(int argc, char *argv[]){
         MPI_Recv(&izquierda, 1, MPI_FLOAT, proc_izq, 0, MPI_COMM_WORLD, &estado);
         MPI_Recv(&derecha  , 1, MPI_FLOAT, proc_der, 0, MPI_COMM_WORLD, &estado);
 
+        // Hacemos los cálculos
         for(int j=0; j<TAM-1; ++j){
-            float aux = vectorLocal[j];
+            float aux = vectorLocal[j]; 
             vectorLocal[j]=(izquierda-vectorLocal[j]+vectorLocal[j+1])/2;
-            izquierda = aux;
+            izquierda = aux; // guardamos el valor para la siguiente iteración
         }
         vectorLocal[TAM-1] = (izquierda-vectorLocal[TAM-1]+derecha)/2;
     }
