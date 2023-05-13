@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
 // Declaracion de variables
 //////////////////////////////////////////////////////////////////////////////////////////// 
     int idProceso, numProcesadores;
-    float *vectorGlobal, *vectorLocal, *vectorSecuencial;
+    float *vectorGlobal, *vectorEntrada, *vectorSalida, *vectorSecuencial;
     MPI_Status estado;
  
     MPI_Init(&argc, &argv); // Inicializamos la comunicacion de los procesos
@@ -65,14 +65,15 @@ int main(int argc, char *argv[]){
             vectorSecuencial[i] = valor;
         }
     }
-    vectorLocal = new float[TAM];
+    vectorEntrada = new float[TAM+2];
+    vectorSalida = new float[TAM+2];
     // Repartimos los valores del vector global a los locales
     MPI_Scatter(vectorGlobal, TAM, MPI_FLOAT, 
-        vectorLocal, TAM, MPI_FLOAT, 
+        &vectorEntrada[1], TAM, MPI_FLOAT, 
         0, MPI_COMM_WORLD); 
 
 //////////////////////////////////////////////////////////////////////////////
-// Cálculo paralelo
+// Cálculo
 //////////////////////////////////////////////////////////////////////////////
 
     const int proc_izq = (idProceso-1+numProcesadores)%numProcesadores, // procesador de la izquierda
@@ -80,34 +81,36 @@ int main(int argc, char *argv[]){
 
     for(int i=0; i<numIter; ++i){
         // En cada iteración, intercambiamos datos, y operamos
-        float izquierda, derecha; // valores frontera
 
         // Enviamos el primer valor al proceso izquierda, y el ultimo al derecha
-        MPI_Send(&vectorLocal[0]    , 1, MPI_FLOAT, proc_izq, 0, MPI_COMM_WORLD);
-        MPI_Send(&vectorLocal[TAM-1], 1, MPI_FLOAT, proc_der, 0, MPI_COMM_WORLD);
+        MPI_Send(&vectorEntrada[1]  , 1, MPI_FLOAT, proc_izq, 0, MPI_COMM_WORLD);
+        MPI_Send(&vectorEntrada[TAM], 1, MPI_FLOAT, proc_der, 0, MPI_COMM_WORLD);
 
         // Recibimos los valores frontera 
-        MPI_Recv(&izquierda, 1, MPI_FLOAT, proc_izq, 0, MPI_COMM_WORLD, &estado);
-        MPI_Recv(&derecha  , 1, MPI_FLOAT, proc_der, 0, MPI_COMM_WORLD, &estado);
+        MPI_Recv(&vectorEntrada[0]    , 1, MPI_FLOAT, proc_izq, 0, MPI_COMM_WORLD, &estado);
+        MPI_Recv(&vectorEntrada[TAM+1], 1, MPI_FLOAT, proc_der, 0, MPI_COMM_WORLD, &estado);
 
-        for(int j=0; j<TAM-1; ++j){
-            float aux = vectorLocal[j];
-            vectorLocal[j]=(izquierda-vectorLocal[j]+vectorLocal[j+1])/2;
-            izquierda = aux;
+        for(int j=1; j<=TAM; ++j){
+            vectorSalida[j]=(vectorEntrada[j-1]-vectorEntrada[j]+vectorEntrada[j+1])/2;
         }
-        vectorLocal[TAM-1] = (izquierda-vectorLocal[TAM-1]+derecha)/2;
+
+        // Hacemos un swap, el vectorSalida (con los datos nuevos), pasa a ser entrada
+        float *aux = vectorEntrada;
+        vectorEntrada = vectorSalida;
+        vectorSalida = aux;
     }
 
 ///////////////////////////////////////////////////////////////////////
-// Gather, calculo secuencial y errores
+// Gather, calculo secuelcial, y errores
 //////////////////////////////////////////////////////////////////////
 
-    MPI_Gather(vectorLocal, TAM, MPI_FLOAT,
+    MPI_Gather(&vectorEntrada[1], TAM, MPI_FLOAT,
 	    vectorGlobal, TAM, MPI_FLOAT, 
         0, MPI_COMM_WORLD);
     MPI_Finalize();
 
     if(idProceso==0){
+        // Calculo secuencial en vectorSecuencial
         for(int i=0; i<numIter; ++i){
             float izquierda=vectorSecuencial[N-1], // ultimo valor, izquierda para el primero
                 derecha=vectorSecuencial[0]; // primer valor, derecha para el ultimo
@@ -129,6 +132,7 @@ int main(int argc, char *argv[]){
         delete[] vectorGlobal;
         delete[] vectorSecuencial;
     }    
-    delete[] vectorLocal;
+    delete[] vectorEntrada;
+    delete[] vectorSalida;
     return 0;
 }
