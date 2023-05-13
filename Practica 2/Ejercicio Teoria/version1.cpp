@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
 // Declaracion de variables
 //////////////////////////////////////////////////////////////////////////////////////////// 
     int idProceso, numProcesadores;
-    float *vectorGlobal, *vectorLocal;
+    float *vectorGlobal, *vectorLocal, *vectorOriginal;
     MPI_Status estado;
  
     MPI_Init(&argc, &argv); // Inicializamos la comunicacion de los procesos
@@ -27,8 +27,8 @@ int main(int argc, char *argv[]){
         MPI_Finalize();
         return 0;
     }
-    const int num_iter = atoi(argv[1]); // Numero de iteraciones
-    if(num_iter<1 || num_iter>10){
+    const int numIter = atoi(argv[1]); // Numero de iteraciones
+    if(numIter<0 || numIter>10){
         if (idProceso==0)
             cout << "Deberá haber entre 1 y 10 iteraciones"<< endl;
         MPI_Finalize();
@@ -55,18 +55,21 @@ int main(int argc, char *argv[]){
 
     if(idProceso == 0){
         vectorGlobal = new float[N];
+        vectorOriginal = new float[N];
         srand (static_cast <unsigned> (time(0)));
 
         // Rellena el vector global
-        for (int i = 0; i < N; i++) // Random entre [0.0 y 1.0]
-            vectorGlobal[i] = (float)(rand()) / (float)(RAND_MAX);
+        for (int i = 0; i < N; i++){ // Random entre [0.0 y 1.0]
+            float valor = (float)(rand()) / (float)(RAND_MAX);
+            vectorGlobal[i] = valor;
+            vectorOriginal[i] = valor;
+        }
     }
     vectorLocal = new float[TAM];
     // Repartimos los valores del vector global a los locales
     MPI_Scatter(vectorGlobal, TAM, MPI_FLOAT, 
         vectorLocal, TAM, MPI_FLOAT, 
         0, MPI_COMM_WORLD); 
-    
 
 //////////////////////////////////////////////////////////////////////////////
 // Cálculo
@@ -75,7 +78,7 @@ int main(int argc, char *argv[]){
     const int proc_izq = (idProceso-1+numProcesadores)%numProcesadores, // procesador de la izquierda
         proc_der = (idProceso+1)%numProcesadores; // procesador de la derecha
 
-    for(int i=0; i<num_iter; ++i){
+    for(int i=0; i<numIter; ++i){
         // En cada iteración, intercambiamos datos, y operamos
         float izquierda, derecha; // valores frontera
 
@@ -88,7 +91,7 @@ int main(int argc, char *argv[]){
         MPI_Recv(&derecha  , 1, MPI_FLOAT, proc_der, 0, MPI_COMM_WORLD, &estado);
 
         for(int j=0; j<TAM-1; ++j){
-            int aux = vectorLocal[j];
+            float aux = vectorLocal[j];
             vectorLocal[j]=(izquierda-vectorLocal[j]+vectorLocal[j+1])/2;
             izquierda = aux;
         }
@@ -105,11 +108,26 @@ int main(int argc, char *argv[]){
     MPI_Finalize();
 
     if(idProceso==0){
-        string st = "";
-        for (int i=0; i<N; ++i)
-            st+= to_string(vectorGlobal[i]) + "     ";
-        cout << st << endl;
+        for(int i=0; i<numIter; ++i){
+            float izquierda=vectorOriginal[N-1], // ultimo valor, izquierda para el primero
+                derecha=vectorOriginal[0]; // primer valor, derecha para el ultimo
+            for(int j=0; j<N-1; ++j){
+                float aux = vectorOriginal[j];
+                vectorOriginal[j]=(izquierda-vectorOriginal[j]+vectorOriginal[j+1])/2;
+                izquierda = aux; // izquierda se guarda, para el siguiente
+            }
+            vectorOriginal[N-1] = (izquierda-vectorOriginal[N-1]+derecha)/2;
+        }
+        int errores=0;
+        for(int i=0;i<N;++i){
+            if(vectorGlobal[i]!=vectorOriginal[i]){
+                errores++;
+                cout << i << " " << vectorGlobal[i] << " " << vectorOriginal[i] << endl;
+            }
+        }
+        cout << "Hay " << errores << " errores." << endl;
         delete[] vectorGlobal;
+        delete[] vectorOriginal;
     }    
     delete[] vectorLocal;
     return 0;
