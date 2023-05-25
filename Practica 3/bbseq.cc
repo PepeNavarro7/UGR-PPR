@@ -37,8 +37,8 @@ int main (int argc, char **argv) {
 	InicNodo (&nodo);              // inicializa estructura nodo
 
 	LeerMatriz (argv[2], tsp0);    // lee matriz de fichero
-	activo = !Inconsistente(tsp0);
-        double t=MPI::Wtime();
+	activo = !Inconsistente(tsp0); // Se examina si la matriz es correcta (tiene solucion o no)
+    double t=MPI::Wtime();
 	while (activo) {       // ciclo del Branch&Bound
 		Ramifica (&nodo, &lnodo, &rnodo, tsp0);		
 		nueva_U = false;
