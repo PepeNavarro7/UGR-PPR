@@ -25,8 +25,8 @@ const int NEGRO = 1;
 
 
 // Comunicadores que usar� cada proceso
-Intracomm comunicadorCarga;	// Para la distribuci�n de la carga
-Intracomm comunicadorCota;	// Para la difusi�n de una nueva cota superior detectada
+extern MPI_Comm comunicadorCarga;	// Para la distribuci�n de la carga
+extern MPI_Comm comunicadorCota;	// Para la difusi�n de una nueva cota superior detectada
 
 // Variables que indican el estado de cada proceso
 extern int rank;	 // Identificador del proceso dentro de cada comunicador (coincide en ambos)
@@ -396,3 +396,41 @@ void liberarMatriz(int** m) {
 	delete [] m;
 }
 
+void Equilibrar_Carga(tPila *pila, bool *fin){
+	MPI_Status status;
+    if (pila->vacia()) { // el proceso no tiene trabajo: pide a otros procesos 
+    //Enviar peticion de trabajo al proceso (id+1)%P;
+		MPI_Send(0, 0, MPI_INT, (rank+1)%size, PETICION, comunicadorCarga);
+    while (pila->vacia() && !fin) {
+      //Esperar mensaje de otro proceso;
+		  MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, comunicadorCarga, &status);
+      switch (status.MPI_TAG) {
+        case PETICION: // peticion de trabajo
+          //Recibir mensaje de peticion de trabajo;
+          MPI_Recv(0,0,MPI_INT,status.MPI_SOURCE,PETICION,comunicadorCarga,&status);
+          if (status.MPI_SOURCE == rank) { // peticion devuelta
+              //Reenviar peticion de trabajo al proceso (id+1)%P;
+              MPI_Send(0, 0, MPI_INT, (rank+1)%size, PETICION, comunicadorCarga);
+              //Iniciar deteccion de posible situacion de fin;
+          } else // peticion de otro proceso: la retransmite al siguie
+						//Pasar peticion de trabajo al proceso (id+1)%P;
+          break;
+                case NODOS : // resultado de una peticion de trabajo
+					Recibir nodos del proceso donante;
+					Almacenar nodos recibidos en la pila;
+                break;
+            }
+        }
+    }
+    if (!fin) { // el proceso tiene nodos para trabajar
+		Sondear si hay mensajes pendientes de otros procesos;
+		while (hay mensajes) { // atiende peticiones mientras haya mensajes
+		Recibir mensaje de peticion de trabajo;
+		if (hay suficientes nodos en la pila para ceder)
+		Enviar nodos al proceso solicitante;
+		else
+		Pasar peticion de trabajo al proceso (id+1)%P;
+		Sondear si hay mensajes pendientes de otros procesos;
+		}
+    }
+}

@@ -211,3 +211,4 @@ int ** reservarMatrizCuadrada(unsigned int orden);
 void liberarMatriz(int** m);
 /* ******************************************************************** */
 
+void Equilibrar_Carga(tPila *pila, bool *fin);
