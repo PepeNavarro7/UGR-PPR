@@ -29,14 +29,14 @@ extern MPI_Comm comunicadorCarga;	// Para la distribuci�n de la carga
 extern MPI_Comm comunicadorCota;	// Para la difusi�n de una nueva cota superior detectada
 
 // Variables que indican el estado de cada proceso
-extern int rank;	 // Identificador del proceso dentro de cada comunicador (coincide en ambos)
-extern int size;	// N�mero de procesos que est�n resolviendo el problema
+extern int idProceso;	 // Identificador del proceso dentro de cada comunicador (coincide en ambos)
+extern int numProcesos;	// N�mero de procesos que est�n resolviendo el problema
 int estado;	// Estado del proceso {ACTIVO, PASIVO}
 int color;	// Color del proceso {BLANCO,NEGRO}
 int color_token; 	// Color del token la �ltima vez que estaba en poder del proceso
 bool token_presente;  // Indica si el proceso posee el token
-int anterior;	// Identificador del anterior proceso
-int siguiente;	// Identificador del siguiente proceso
+extern int ANTERIOR;	// Identificador del anterior proceso
+extern int SIGUIENTE;	// Identificador del siguiente proceso
 bool difundir_cs_local;	// Indica si el proceso puede difundir su cota inferior local
 bool pendiente_retorno_cs;	// Indica si el proceso est� esperando a recibir la cota inferior de otro proceso
 
@@ -396,41 +396,56 @@ void liberarMatriz(int** m) {
 	delete [] m;
 }
 
-void Equilibrar_Carga(tPila *pila, bool *fin){
+void Equilibrar_Carga(tPila *pila, bool &fin){
 	MPI_Status status;
-    if (pila->vacia()) { // el proceso no tiene trabajo: pide a otros procesos 
-    //Enviar peticion de trabajo al proceso (id+1)%P;
-		MPI_Send(0, 0, MPI_INT, (rank+1)%size, PETICION, comunicadorCarga);
+  int solicita, count;
+  if (pila->vacia()) { // el proceso no tiene trabajo: pide a otros procesos 
+    MPI_Send(&idProceso, 1, MPI_INT, SIGUIENTE, PETICION, comunicadorCarga); //Enviar peticion de trabajo al proceso (id+1)%P;
+    //std::cout << idProceso << "-> pido trabajo a "<< SIGUIENTE << std::endl;
     while (pila->vacia() && !fin) {
-      //Esperar mensaje de otro proceso;
-		  MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, comunicadorCarga, &status);
+      //std::cout << idProceso << "-> espero mensajes." << std::endl;
+      MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, comunicadorCarga, &status); //Esperar mensaje de otro proceso;
       switch (status.MPI_TAG) {
         case PETICION: // peticion de trabajo
-          //Recibir mensaje de peticion de trabajo;
-          MPI_Recv(0,0,MPI_INT,status.MPI_SOURCE,PETICION,comunicadorCarga,&status);
-          if (status.MPI_SOURCE == rank) { // peticion devuelta
-              //Reenviar peticion de trabajo al proceso (id+1)%P;
-              MPI_Send(0, 0, MPI_INT, (rank+1)%size, PETICION, comunicadorCarga);
-              //Iniciar deteccion de posible situacion de fin;
-          } else // peticion de otro proceso: la retransmite al siguie
-						//Pasar peticion de trabajo al proceso (id+1)%P;
+          MPI_Recv(&solicita,1,MPI_INT,ANTERIOR,PETICION,comunicadorCarga,&status); //Recibir mensaje de peticion de trabajo;
+          //std::cout << idProceso << "-> recibo que "<< solicita << " pide trabajo." << std::endl;
+          if (solicita == idProceso) { // peticion devuelta
+            MPI_Send(&idProceso, 1, MPI_INT, SIGUIENTE, PETICION, comunicadorCarga); //Reenviar peticion de trabajo al proceso (id+1)%P;
+            // Iniciar deteccion de posible situacion de fin;
+            // Como no he hecho el fin todavía, cuando se acaben los trabajos el proceso se quedará
+            // ad infinitum en este bucle
+          } else{ // peticion de otro proceso: la retransmite al siguiente
+            MPI_Send(&solicita, 1, MPI_INT, SIGUIENTE, PETICION, comunicadorCarga); //Pasar peticion de trabajo al proceso (id+1)%P;
+            //std::cout << idProceso << "-> reenvio a " << SIGUIENTE << " que " << solicita << " pide trabajo." << std::endl;
+          }
           break;
-                case NODOS : // resultado de una peticion de trabajo
-					Recibir nodos del proceso donante;
-					Almacenar nodos recibidos en la pila;
-                break;
-            }
-        }
+        case NODOS: // resultado de una peticion de trabajo
+          MPI_Get_count(&status, MPI_INT, &count); //Recibir nodos del proceso donante;
+          MPI_Recv(pila->nodos,count,MPI_INT,status.MPI_SOURCE,NODOS,comunicadorCarga,&status); //Almacenar nodos recibidos en la pila;
+          std::cout << idProceso << "-> recibo nodos de " << status.MPI_SOURCE << std::endl;
+          break;
+      }
     }
-    if (!fin) { // el proceso tiene nodos para trabajar
-		Sondear si hay mensajes pendientes de otros procesos;
-		while (hay mensajes) { // atiende peticiones mientras haya mensajes
-		Recibir mensaje de peticion de trabajo;
-		if (hay suficientes nodos en la pila para ceder)
-		Enviar nodos al proceso solicitante;
-		else
-		Pasar peticion de trabajo al proceso (id+1)%P;
-		Sondear si hay mensajes pendientes de otros procesos;
+  }
+  if (!fin){ // el proceso tiene nodos para trabajar
+    int flag;
+    
+    MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, comunicadorCarga, &flag, &status); //Sondear si hay mensajes pendientes de otros procesos;
+		std::cout << idProceso << "-> sondeo mensajes con flag " << flag << std::endl;
+    // Aqui antes ponia ANY_SOURCE y ANY_TAG
+		while (flag>0) { // atiende peticiones mientras haya mensajes
+		  MPI_Recv(&solicita,1,MPI_INT,ANTERIOR,PETICION,comunicadorCarga,&status); //Recibir mensaje de peticion de trabajo;
+      if (pila->tamanio()>1){ // hay suficientes nodos en la pila para ceder
+        tPila nuevapila;
+        pila->divide(nuevapila);
+        MPI_Send(nuevapila.nodos, nuevapila.tope, MPI_INT, 
+          solicita, NODOS, comunicadorCarga); //Enviar nodos al proceso solicitante;
+        std::cout << idProceso << "-> mando nodos a " << solicita << std::endl;
+      } else{
+        MPI_Send(&solicita, 1, MPI_INT, SIGUIENTE, PETICION, comunicadorCarga); //Pasar peticion de trabajo al proceso (id+1)%P;
+        std::cout << idProceso << "-> le reenvio " << flag << " a " << SIGUIENTE << " la peticion de " << solicita << std::endl;
+      }
+		  MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, comunicadorCarga, &flag, &status); //Sondear si hay mensajes pendientes de otros procesos;
 		}
-    }
+  }
 }
