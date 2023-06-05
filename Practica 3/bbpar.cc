@@ -7,97 +7,102 @@
 #include <mpi.h>
 #include "libbb.h"
 
-//using namespace std;
-
 unsigned int NCIUDADES;
-int idProceso, numProcesos, ANTERIOR, SIGUIENTE;
-MPI_Comm comunicadorCarga;	// Para la distribuci�n de la carga
-MPI_Comm comunicadorCota; // Para la difusi�n de una nueva cota superior detectada
+int idProceso, numProcesos, SIGUIENTE, ANTERIOR;
 
-int main (int argc, char **argv) {
+MPI_Comm comunicadorCarga;
 
-    MPI_Init(&argc, &argv);
-    MPI_Comm_size(MPI_COMM_WORLD, &numProcesos);
-    MPI_Comm_rank(MPI_COMM_WORLD, &idProceso);
-	SIGUIENTE = (idProceso+1)%numProcesos;
-	ANTERIOR = (idProceso-1+numProcesos)%numProcesos;
-
-	MPI_Comm_split(MPI_COMM_WORLD,0,idProceso,&comunicadorCarga);
-	MPI_Comm_split(MPI_COMM_WORLD,0,idProceso,&comunicadorCota);
-	
-	if(argc!=3 && idProceso==0){
-		std::cerr << "La sintaxis es: bbpar <tama�o> <archivo>" << std::endl;
+int main(int argc, char **argv){
+    if (argc == 3){
+        NCIUDADES = atoi(argv[1]);
+    }else {
+		std::cerr << "La sintaxis es: bbseq <tama�o> <archivo>" << std::endl;
 		exit(1);
 	}
-	NCIUDADES = atoi(argv[1]);
 
-	tNodo	nodo,         // nodo a explorar
-			lnodo,        // hijo izquierdo
-			rnodo,        // hijo derecho
-			solucion;     // mejor solucion
-	bool fin = false,        // condicion de fin
-		nueva_U;       // hay nuevo valor de cota superior
-	int  U;             // valor de cota superior
-	int iteraciones = 0;
-	tPila pila;         // pila de nodos a explorar
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &idProceso);
+    MPI_Comm_size(MPI_COMM_WORLD, &numProcesos);
 
-	int** matriz = reservarMatrizCuadrada(NCIUDADES); // matriz que guardará los datos
-	U = INFINITO;                  // inicializa cota superior
-	InicNodo (&nodo);              // inicializa estructura nodo
+    // Colores de los comunicadores
+    int carga = 0;
+    int cota = 1;
 
-	if(idProceso==0){
-		LeerMatriz (argv[2], matriz);    // lee matriz de fichero
-	}
-	// Repartimos la matriz a todos los procesos
-	MPI_Bcast(&matriz[0][0],NCIUDADES*NCIUDADES,MPI_INT,0,MPI_COMM_WORLD);
-	MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Comm_split(MPI_COMM_WORLD, carga, idProceso, &comunicadorCarga);
 
-	if (idProceso != 0) {
-		Equilibrar_Carga (&pila, fin);
-		if (!fin) 
-			pila.pop(nodo); // saco un nodo de la pila y lo guardo en "nodo"
-	}
+    SIGUIENTE = (idProceso + 1 ) % numProcesos;
+    ANTERIOR = (idProceso - 1 + numProcesos) % numProcesos;
 
-	fin= Inconsistente(matriz);
-	
-	while (!fin) { // ciclo del Branch&Bound
-		Ramifica (&nodo, &lnodo, &rnodo, matriz);
-		if (Solucion (&rnodo)) {
-			if (rnodo.ci() < U)  {
-				U = rnodo.ci(); // actualiza c.s.
-				nueva_U = true;
-			}
-		} else { // no es un nodo hoja
-			if (rnodo.ci() < U) {
+    int **matriz = reservarMatrizCuadrada(NCIUDADES);
+    tNodo nodo,   // nodo a explorar
+        lnodo,    // hijo izquierdo
+        rnodo,    // hijo derecho
+        solucion; // mejor solucion
+    bool nueva_U,  // hay nuevo valor de c.s.
+        fin;
+    int U;        // valor de c.s.
+    int iteraciones = 0;
+    tPila pila; // pila de nodos a explorar
+
+    U = INFINITO;    // inicializa cota superior
+    InicNodo(&nodo); // inicializa estructura nodo
+
+    if(idProceso == 0) {
+        LeerMatriz(argv[2], matriz);
+    }
+    
+    MPI_Bcast(&matriz[0][0], NCIUDADES*NCIUDADES, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+    double t = MPI_Wtime();
+
+    if(idProceso != 0) {
+        EquilibrarCarga(pila, fin);
+        if(!fin)
+            pila.pop(nodo);
+    }
+
+    fin = Inconsistente(matriz);
+
+    while(!fin) {
+        Ramifica(&nodo, &lnodo, &rnodo, matriz);
+        nueva_U = false;
+
+        if(Solucion(&rnodo)) {
+            if(rnodo.ci() < U) {
+                U = rnodo.ci();
+                nueva_U = true;
+            }
+        } else {
+            if(rnodo.ci() < U){
 				pila.push(rnodo);
 			}
-		}
-		if (Solucion(&lnodo)) {
-			if (lnodo.ci() < U){
-				U = lnodo.ci(); // actualiza c.s.
-				nueva_U = true;
-			}
-		} else { // no es nodo hoja
-			if (lnodo.ci() < U) 
+        }
+
+        if(Solucion(&lnodo)) {
+            if(lnodo.ci() < U) {
+                U = lnodo.ci();
+                nueva_U = true;
+            }
+        } else {
+            if(lnodo.ci() < U){
 				pila.push(lnodo);
-		}
-		if(nueva_U){
+			}
+        }
+
+        if(nueva_U){
 			pila.acotar(U);
-			nueva_U=false;
 		}
-		//Difusion_Cota_Superior (&U);
-		//if (hay_nueva_cota_superior) 
-		//	Acotar (&pila, U);
-		Equilibrar_Carga(&pila, fin);
-		if (!fin)
-			pila.pop(nodo);
-		iteraciones++;
-		std::cout << idProceso << "-> " << iteraciones << std::endl;
-	}
-	MPI_Barrier(MPI_COMM_WORLD);
-	std::cout << "Soy " << idProceso << " e hice " << iteraciones << " iteraciones." << std::endl;
+           
+        EquilibrarCarga(pila, fin);
+        if(!fin)
+            pila.pop(nodo);
+        iteraciones++;
+        std::cout << idProceso << "-> " << iteraciones << " iteraciones." << std::endl;
+    }
+	
+    MPI_Barrier(MPI_COMM_WORLD);
+    t = MPI_Wtime() - t;
+	liberarMatriz(matriz);
     MPI_Finalize();
-	if(idProceso==0){
-		liberarMatriz(matriz);
-	}
+    return 0;
 }

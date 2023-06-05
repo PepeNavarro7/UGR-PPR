@@ -211,4 +211,8 @@ int ** reservarMatrizCuadrada(unsigned int orden);
 void liberarMatriz(int** m);
 /* ******************************************************************** */
 
-void Equilibrar_Carga(tPila *pila, bool &fin);
+// Funcion del equilibrado de carga
+void EquilibrarCarga(tPila &pila, bool &fin);
+
+// Funcion para detectar posible situacion de fin
+void DeteccionFin();
