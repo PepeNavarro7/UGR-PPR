@@ -38,8 +38,9 @@ int main(int argc, char **argv){
         solucion; // mejor solucion
     bool nueva_U,  // hay nuevo valor de c.s.
         fin;
-    int U;        // valor de c.s.
-    int iteraciones = 0;
+    int U,        // valor de c.s.
+        iteraciones = 0, // iteraciones de cada procesador
+        mejor_solucion; // coste de la solucion
     tPila pila; // pila de nodos a explorar
 
     U = INFINITO;    // inicializa cota superior
@@ -60,7 +61,6 @@ int main(int argc, char **argv){
     }
 
     fin = Inconsistente(matriz);
-
     while(!fin) {
         Ramifica(&nodo, &lnodo, &rnodo, matriz);
         nueva_U = false;
@@ -69,6 +69,7 @@ int main(int argc, char **argv){
             if(rnodo.ci() < U) {
                 U = rnodo.ci();
                 nueva_U = true;
+                CopiaNodo (&rnodo, &solucion);
             }
         } else {
             if(rnodo.ci() < U){
@@ -80,6 +81,7 @@ int main(int argc, char **argv){
             if(lnodo.ci() < U) {
                 U = lnodo.ci();
                 nueva_U = true;
+                CopiaNodo (&lnodo,&solucion);
             }
         } else {
             if(lnodo.ci() < U){
@@ -98,9 +100,24 @@ int main(int argc, char **argv){
         if(iteraciones%1000==0)
             std::cout << idProceso << "-> " << iteraciones << " iteraciones." << std::endl;
     }
-	
     MPI_Barrier(MPI_COMM_WORLD);
     t = MPI_Wtime() - t;
+    std::cout << "Proceso finalizado." << std::endl;
+    mejor_solucion = solucion.ci();
+    MPI_Allreduce(&mejor_solucion, &mejor_solucion, 1,MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+    if(solucion.ci() == mejor_solucion){
+        std::cout << idProceso << "Solucion:" << std::endl;
+        EscribeNodo(&solucion);
+        std::cout << "Tiempo gastado= " << t << std::endl;
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+    for(int i=0;i<numProcesos;++i){
+        if(i==idProceso){
+            std::cout << "Numero de iteraciones  de " << idProceso << " = " << iteraciones << std::endl;
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+    }
+
 	liberarMatriz(matriz);
     MPI_Finalize();
     return 0;

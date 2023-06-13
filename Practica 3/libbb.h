@@ -213,6 +213,3 @@ void liberarMatriz(int** m);
 
 // Funcion del equilibrado de carga
 void EquilibrarCarga(tPila &pila, bool &fin);
-
-// Funcion para detectar posible situacion de fin
-void DeteccionFin();
