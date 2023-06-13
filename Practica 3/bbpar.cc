@@ -9,6 +9,7 @@
 
 unsigned int NCIUDADES;
 int idProceso, numProcesos, SIGUIENTE, ANTERIOR;
+bool token_presente;
 
 MPI_Comm comunicadorCarga;
 
@@ -24,14 +25,11 @@ int main(int argc, char **argv){
     MPI_Comm_rank(MPI_COMM_WORLD, &idProceso);
     MPI_Comm_size(MPI_COMM_WORLD, &numProcesos);
 
-    // Colores de los comunicadores
-    int carga = 0;
-    int cota = 1;
-
-    MPI_Comm_split(MPI_COMM_WORLD, carga, idProceso, &comunicadorCarga);
+    MPI_Comm_split(MPI_COMM_WORLD, 0, idProceso, &comunicadorCarga);
 
     SIGUIENTE = (idProceso + 1 ) % numProcesos;
     ANTERIOR = (idProceso - 1 + numProcesos) % numProcesos;
+    token_presente = (idProceso==0);
 
     int **matriz = reservarMatrizCuadrada(NCIUDADES);
     tNodo nodo,   // nodo a explorar
@@ -97,7 +95,8 @@ int main(int argc, char **argv){
         if(!fin)
             pila.pop(nodo);
         iteraciones++;
-        std::cout << idProceso << "-> " << iteraciones << " iteraciones." << std::endl;
+        if(iteraciones%1000==0)
+            std::cout << idProceso << "-> " << iteraciones << " iteraciones." << std::endl;
     }
 	
     MPI_Barrier(MPI_COMM_WORLD);

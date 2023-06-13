@@ -437,6 +437,7 @@ void liberarMatriz(int **m)
 void EquilibrarCarga(tPila &pila, bool &fin) {
   MPI_Status status;
   int count, solicita, flag;
+  color=BLANCO;
 
   // Si la pila esta vacia
   if(pila.vacia()) {
@@ -450,27 +451,72 @@ void EquilibrarCarga(tPila &pila, bool &fin) {
       // Sondear los mensajes de peticion
       MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, comunicadorCarga, &status);
 
-      switch (status.MPI_TAG)      {
+      switch (status.MPI_TAG){
       // Si es una peticion de trabajo la recibo del proceso anterior y se la envio al siguiente
       case PETICION:
         MPI_Recv(&solicita, 1, MPI_INT, ANTERIOR, PETICION, comunicadorCarga, &status);
         MPI_Send(&solicita, 1, MPI_INT, SIGUIENTE, PETICION, comunicadorCarga);
         // Si el solicitante es igual a rank se ha dado una vuelta, detectar posible deteccion de fin
         if(solicita == idProceso){
-          DeteccionFin();
+          // Trabajo agotado
+          estado=PASIVO;
+
+          if(token_presente){
+            if(idProceso == 0){
+              color_token = BLANCO;
+            } else if (color == NEGRO){
+              color_token = NEGRO;
+            }
+            MPI_Send(NULL,0,MPI_INT,ANTERIOR,TOKEN,MPI_COMM_WORLD);
+            color=BLANCO;
+            token_presente=false;
+            std::cout << idProceso << "-> envio el token a " << ANTERIOR << std::endl;
+          }
         }
         break;
 
       // Se envia los nodos de la peticion
       case NODOS:
+        estado = ACTIVO;
         // Obtengo el numero de nodos
         MPI_Get_count(&status, MPI_INT, &count);
         // Recibo los nodos
         MPI_Recv(pila.nodos, count, MPI_INT, status.MPI_SOURCE, NODOS, comunicadorCarga, &status);
         // Actualizo el tope de la pila
         pila.tope = count;
-        std::cout << idProceso << "-> Recibo nodos de " << status.MPI_SOURCE << std::endl;
+        //std::cout << idProceso << "-> Recibo nodos de " << status.MPI_SOURCE << std::endl;
         break;
+
+      case TOKEN:
+        MPI_Recv(NULL,0,MPI_INT,SIGUIENTE,TOKEN,comunicadorCarga,&status);
+        token_presente=true;
+        std::cout << idProceso << "-> recibo token de " << ANTERIOR << std::endl;
+        
+        if (estado == PASIVO){
+          if (idProceso == 0 && color == BLANCO && color_token == BLANCO){
+            // Terminacion detectada
+            fin = true;
+            MPI_Send(NULL, 0, MPI_INT, SIGUIENTE, FIN, comunicadorCarga);
+            MPI_Recv(NULL, 0, MPI_INT, ANTERIOR, FIN, comunicadorCarga, &status);
+          }
+          else {
+            if (idProceso == 0) 
+              color_token = BLANCO;
+            else if(color == NEGRO)
+              color_token = NEGRO;
+
+            MPI_Send(NULL, 0, MPI_INT, ANTERIOR, TOKEN, comunicadorCarga);
+            std::cout << idProceso << "-> envio token a " << ANTERIOR << std::endl;
+            color = BLANCO;
+            token_presente = false;
+          }
+        }
+        break;
+      case FIN:
+        MPI_Recv(NULL,0,MPI_INT,ANTERIOR,FIN,comunicadorCarga, &status);
+        fin=true;
+        MPI_Send(NULL,0,MPI_INT,SIGUIENTE,FIN,comunicadorCarga);
+      break;
       
       default:
         break;
@@ -484,19 +530,29 @@ void EquilibrarCarga(tPila &pila, bool &fin) {
 
     // Mientras haya mensajes
     while (flag > 0) {
-      // Recibo peticion de trabajo del proceso anterior
-      MPI_Recv(&solicita, 1, MPI_INT, ANTERIOR, PETICION, comunicadorCarga, &status);
+      switch (status.MPI_TAG){
+        case PETICION:
+          // Recibo peticion de trabajo del proceso anterior
+          MPI_Recv(&solicita, 1, MPI_INT, ANTERIOR, PETICION, comunicadorCarga, &status);
 
-      // Si puede el proceso ceder carga, divide la pila y la envia al proceso solicitante
-      if(pila.tamanio() > 1) {
-        tPila pilaAux;
-        pila.divide(pilaAux);
-        MPI_Send(pilaAux.nodos, pilaAux.tope, MPI_INT, solicita, NODOS, comunicadorCarga);
-        std::cout << idProceso << "-> Envio nodos a " << solicita << std::endl;
-      } else {
-        MPI_Send(&solicita, 1, MPI_INT, SIGUIENTE, PETICION, comunicadorCarga);
+          // Si puede el proceso ceder carga, divide la pila y la envia al proceso solicitante
+          if(pila.tamanio() > 1) {
+            tPila pilaAux;
+            pila.divide(pilaAux);
+            MPI_Send(pilaAux.nodos, pilaAux.tope, MPI_INT, solicita, NODOS, comunicadorCarga);
+            //std::cout << idProceso << "-> Envio nodos a " << solicita << std::endl;
+            if(idProceso<solicita)
+              color=NEGRO;
+          } else {
+            MPI_Send(&solicita, 1, MPI_INT, SIGUIENTE, PETICION, comunicadorCarga);
+          }
+          break;
+        case TOKEN:
+          MPI_Recv(NULL, 0, MPI_INT, status.MPI_SOURCE, TOKEN, comunicadorCarga, &status);
+          token_presente = true;
+          break;
+        default: break;
       }
-
       // Se vuelve a sondear si quedan mensajes
       MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, comunicadorCarga, &flag, &status);
     }

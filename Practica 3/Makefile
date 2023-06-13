@@ -14,7 +14,7 @@ libbb.o: libbb.cc libbb.h
 	mpicxx -O3 -c  libbb.cc 
 
 do: bbpar
-	mpirun -np 4 bbpar 10 ./tsp_problems/tsp10.1
+	mpirun -np 4 bbpar 40 ./tsp_problems/tsp40.1
 
 clean:
 	/bin/rm -f *.o bbseq bbpar
