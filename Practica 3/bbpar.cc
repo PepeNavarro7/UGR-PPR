@@ -102,11 +102,10 @@ int main(int argc, char **argv){
     }
     MPI_Barrier(MPI_COMM_WORLD);
     t = MPI_Wtime() - t;
-    std::cout << "Proceso finalizado." << std::endl;
     mejor_solucion = solucion.ci();
     MPI_Allreduce(&mejor_solucion, &mejor_solucion, 1,MPI_INT, MPI_MIN, MPI_COMM_WORLD);
     if(solucion.ci() == mejor_solucion){
-        std::cout << idProceso << "Solucion:" << std::endl;
+        std::cout << "Proceso finalizado." << std::endl << "Solucion:" << std::endl;
         EscribeNodo(&solucion);
         std::cout << "Tiempo gastado= " << t << std::endl;
     }
